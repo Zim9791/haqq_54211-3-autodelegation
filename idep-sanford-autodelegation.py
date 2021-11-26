@@ -16,14 +16,8 @@ class IdepAutodelegation():
         self.setup_telegram()
         self.setup_idep_info()
 
-        # Prompt for the password if not in environment
-        if "IDEP_PASSWORD" in os.environ:
-            self.password = os.environ['IDEP_PASSWORD']
-        else:
-            self.password = getpass.getpass("Enter the wallet password: ")
-
         # send the hello message
-        self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!\nCurrent Delegations: { self.get_delegations() }' )
+        self.send( f'Hello from IDEP Autodelegation Bot on {self.name}!' )
         
     def read_config( self, config_file ):
         '''
@@ -42,18 +36,30 @@ class IdepAutodelegation():
         '''
         if "TELEGRAM_TOKEN" in os.environ:
             self.telegram_token = os.environ['TELEGRAM_TOKEN']
-        else:
+        elif 'Telegram' in self.config and 'telegram_token' in self.config['Telegram']:
             self.telegram_token = self.config['Telegram']['telegram_token']
+        else:
+            self.telegram_token = None
         
         if "TELEGRAM_CHAT_ID" in os.environ:
             self.telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
-        else:
+        elif 'Telegram' in self.config and 'telegram_chat_id' in self.config['Telegram']:
             self.telegram_chat_id = self.config['Telegram']['telegram_chat_id']
+        else:
+            self.telegram_chat_id = None
 
     def setup_idep_info( self ):
         '''
         Setup idep info
         '''
+        # Prompt for the password if not in environment
+        if "IDEP_PASSWORD" in os.environ:
+            self.password = os.environ['IDEP_PASSWORD']
+        elif 'password' in self.config['IDEP']:
+            self.password = self.config['IDEP']['password']
+        else:
+            self.password = getpass.getpass("Enter the wallet password: ")
+
         # chain id
         if "CHAIN_ID" in os.environ:
             self.chain_id = os.environ['CHAIN_ID']
@@ -63,6 +69,8 @@ class IdepAutodelegation():
         # wallet name
         if "WALLET_NAME" in os.environ:
             self.wallet_name = os.environ['WALLET_NAME']
+        if "WALLETNAME" in os.environ:
+            self.wallet_name = os.environ['WALLETNAME']
         else:
             self.wallet_name = self.config['IDEP']['wallet_name']
         
@@ -71,6 +79,7 @@ class IdepAutodelegation():
             self.wallet_key = os.environ['WALLETKEY']
         else:
             self.wallet_key = self.config['IDEP']['wallet_key']
+
         if "VALIDATOR_KEY" in os.environ:
             self.validator_key = os.environ['VALIDATORKEY']
         else:
@@ -78,10 +87,12 @@ class IdepAutodelegation():
 
     def send( self, msg ):
         '''
-        Send telegram message
+        Print the message and send telegram message, if available
         '''
-        requests.post( f'https://api.telegram.org/bot{self.telegram_token}/sendMessage?chat_id={self.telegram_chat_id}&text={msg}' )
-        
+        if self.telegram_token != None and self.telegram_chat_id != None:
+            requests.post( f'https://api.telegram.org/bot{self.telegram_token}/sendMessage?chat_id={self.telegram_chat_id}&text={msg}' )
+        print( msg )
+
     def parse_subprocess( self, response, keyword ):
         '''
         Parse and return the line
@@ -146,34 +157,38 @@ class IdepAutodelegation():
         proc = Popen([ f"iond q staking delegations-to {self.validator_key} --chain-id={self.chain_id}" ], stdout=PIPE, shell=True)
         (out, err) = proc.communicate()
         line = self.parse_subprocess( out, 'shares' )
-        balance = line.split('"')[1].split(".")[0]
+        balance = float(line.split('"')[1].split(".")[0]) * (1/100000000)
         return balance
 
     def delegation_cycle( self ):
         '''
         Delegation cycle for distributing rewards and sending them out
         '''
-        self.send( f"{self.name}: Start Delegation Cycle!" )
-        self.send( f"{self.name}: Current Delegation: { self.get_delegations() } " )
+        self.send( f"Start Delegation Cycle!" )
+        curr_delegations = self.get_delegations()
+        self.send( f"Current Delegation: { curr_delegations } " )
 
-        self.send( f"{self.name}: Distribution Tx Hash: { self.distribute_rewards() }" )
+        self.send( f"Distribution Tx Hash: { self.distribute_rewards() }" )
         time.sleep( 10 )
 
-        self.send( f"{self.name}: Commission Tx Hash: { self.distribute_rewards_commission() }" )
+        self.send( f"Commission Tx Hash: { self.distribute_rewards_commission() }" )
         time.sleep( 10 )
         
         balance = self.get_balance()
-        self.send( f"{self.name}: Current Balance (post distribution): { balance } " )
-        self.send( f"{self.name}: Delegation Tx Hash: { self.delegate( balance ) }" )
+        self.send( f"Current Balance (post distribution): { balance } " )
+        self.send( f"Delegation Tx Hash: { self.delegate( balance ) }" )
         time.sleep( 10 )
 
-        self.send( f"{self.name}: New Delegation Shares: { self.get_delegations() } " )
-        self.send( f"{self.name}: End Delegation Cycle" )
+        new_delegations = self.get_delegations()
+        self.send( f"New Delegation: { new_delegations } ( Delta: { new_delegations - curr_delegations } )" )
+        self.send( f"End Delegation Cycle" )
 
 # Create the object
 idep_bot = IdepAutodelegation()
 
-# run periodic delegation cycle at 3600 seconds
+# run periodic delegation cycle as directed by sleep time
+sleep_time = 3600
 while True:
     idep_bot.delegation_cycle()
-    time.sleep( 3600 )
+    idep_bot.send( f"Sleeping { sleep_time } Seconds\n" )
+    time.sleep( sleep_time )

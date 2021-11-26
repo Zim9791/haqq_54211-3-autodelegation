@@ -3,6 +3,7 @@ chain_id = SanfordNetwork
 wallet_name = <wallet name>
 wallet_key = <wallet public key>
 validator_key = <validator public key>
+password = <wallet password>
 
 [Telegram]
 telegram_token = <telegram bot token>
