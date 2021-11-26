@@ -20,7 +20,7 @@ class IdepAutodelegation():
         self.password = getpass.getpass("Enter the wallet password: ")
 
         # send the hello message
-        self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!\nCurrent Balance: { self.get_balance( ) }' )
+        self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!\nCurrent Delegations: { self.get_delegations() }' )
         
     def read_config( self, config_file ):
         '''
@@ -100,7 +100,7 @@ class IdepAutodelegation():
         '''
         Obtain the delegation amount for the validator
         '''
-        proc = Popen([ f"iond q staking delegations-to  {self.validator_key} --chain-id= {self.chain_id}" ], stdout=PIPE, shell=True)
+        proc = Popen([ f"iond q staking delegations-to  {self.validator_key} --chain-id={self.chain_id}" ], stdout=PIPE, shell=True)
         (out, err) = proc.communicate()
         line = self.parse_subprocess( out, 'shares' )
         balance = line.split('"')[1]
@@ -110,15 +110,19 @@ class IdepAutodelegation():
         '''
         Delegation cycle for distributing rewards and sending them out
         '''
-        print( "Start Delegation Cycle!")
-        print( f"Current Delegation: { self.get_delegations() } " )
-        print( f"Distribution Tx Hash: { self.distribute_rewards() }" )
-        time.sleep( 15 )
+        output = [ "Start Delegation Cycle!" ]
+        output.append( f"Current Delegation: { self.get_delegations() } " )
+        output.append( f"Distribution Tx Hash: { self.distribute_rewards() }" )
+        time.sleep( 10 )
         balance = self.get_balance()
-        print( f"Current Balance (post distribution): { balance } " )
-        print( f"Delegation Tx Hash: { self.self.delegate( balance ) }" )
-        print( f"New Delegation Shares: { self.get_delegations() } " )
+        output.append( f"Current Balance (post distribution): { balance } " )
+        output.append( f"Delegation Tx Hash: { self.delegate( balance ) }" )
+        time.sleep( 10 )
+        output.append( f"New Delegation Shares: { self.get_delegations() } " )
+        self.send( f'{self.name}: ' + '\n'.join( output ) )
 
 idep_bot = IdepAutodelegation()
-        
-idep_bot.delegation_cycle()
+
+while True:
+    idep_bot.delegation_cycle()
+    time.sleep( 3600 )
