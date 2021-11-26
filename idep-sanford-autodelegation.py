@@ -49,12 +49,25 @@ class IdepAutodelegation():
         Send telegram message
         '''
         requests.post( f'https://api.telegram.org/bot{self.telegram_token}/sendMessage?chat_id={self.telegram_chat_id}&text={msg}' )
+        
+    def parse_subprocess( self, response, keyword ):
+        '''
+        Parse and return the line
+        '''
+        for line in response.decode("utf-8").split('\n'):
+            if keyword in line:
+                return line
 
     def get_balance( self ):
         '''
         Obtain the IDEP balance
         '''
-        return os.system( f'iond q bank balances { self.wallet_key }' )
+        #response = os.system( f'iond q bank balances { self.wallet_key }' )
+        proc = Popen([ f"iond q bank balances {self.wallet_key}" ], stdout=PIPE, shell=True)
+        (out, err) = proc.communicate()
+        line = self.parse_subprocess( out, 'amount' )
+        balance = line.split('"')[1]
+        return balance
 
     def distribute_rewards( self ):
         '''
