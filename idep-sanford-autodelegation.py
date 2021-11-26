@@ -92,6 +92,7 @@ class IdepAutodelegation():
         child.sendline( self.password )   
         child.expect( pexpect.EOF )                                                                                                                                     
         child.close()
+        print( child.before )
 
     def delegation_cycle( self ):
         '''
