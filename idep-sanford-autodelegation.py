@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os, requests
 import configparser
+import pexpect
 from subprocess import Popen, PIPE
 
 class IdepAutodelegation():
@@ -19,6 +20,7 @@ class IdepAutodelegation():
         # obtain the balance
         response = self.get_balance( )
         print( response )
+        self.distribute_rewards() 
         
     def read_config( self, config_file ):
         '''
@@ -43,6 +45,8 @@ class IdepAutodelegation():
         self.wallet_name = self.config['IDEP']['wallet_name']
         self.wallet_key = self.config['IDEP']['wallet_key']
         self.validator_key = self.config['IDEP']['validator_key']
+        self.password = self.config['IDEP']['password']
+
 
     def send( self, msg ):
         '''
@@ -62,7 +66,6 @@ class IdepAutodelegation():
         '''
         Obtain the IDEP balance
         '''
-        #response = os.system( f'iond q bank balances { self.wallet_key }' )
         proc = Popen([ f"iond q bank balances {self.wallet_key}" ], stdout=PIPE, shell=True)
         (out, err) = proc.communicate()
         line = self.parse_subprocess( out, 'amount' )
@@ -73,7 +76,11 @@ class IdepAutodelegation():
         '''
         Distribute the rewards from the validator
         '''
-        return os.system( f'iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name}' )
+        #proc = Popen([ f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name}" ], stdout=PIPE, shell=True)
+        child = pexpect.spawn( f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name} -y" ) 
+        child.expect( 'Enter keyring passphrase:' ) 
+        child.sendline( self.password ) 
+        print( out )
 
     def delegate( self, amount, delegate ):
         '''
