@@ -113,7 +113,7 @@ class IdepAutodelegation():
         '''
         Obtain the delegation amount for the validator
         '''
-        proc = Popen([ f"iond q staking delegations-to  {self.validator_key} --chain-id={self.chain_id}" ], stdout=PIPE, shell=True)
+        proc = Popen([ f"iond q staking delegations-to {self.validator_key} --chain-id={self.chain_id}" ], stdout=PIPE, shell=True)
         (out, err) = proc.communicate()
         line = self.parse_subprocess( out, 'shares' )
         balance = line.split('"')[1].split(".")[0]
@@ -138,9 +138,12 @@ class IdepAutodelegation():
         time.sleep( 10 )
 
         self.send( f"{self.name}: New Delegation Shares: { self.get_delegations() } " )
+        self.send( f"{self.name}: End Delegation Cycle" )
 
+# Create the object
 idep_bot = IdepAutodelegation()
 
+# run periodic delegation cycle at 3600 seconds
 while True:
     idep_bot.delegation_cycle()
     time.sleep( 3600 )
