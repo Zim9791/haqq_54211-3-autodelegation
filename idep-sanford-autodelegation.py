@@ -57,7 +57,7 @@ class IdepAutodelegation():
         '''
         return os.system( f'iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name}' )
 
-    def delegate( self, amount, delegate = self.validator_key ):
+    def delegate( self, amount, delegate ):
         '''
         Distribute the rewards from the validator
         '''
