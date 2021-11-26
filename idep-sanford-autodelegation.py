@@ -3,7 +3,7 @@ import os, requests
 import configparser
 import pexpect
 import getpass
-
+import time 
 from subprocess import Popen, PIPE
 
 class IdepAutodelegation():
@@ -20,13 +20,7 @@ class IdepAutodelegation():
         self.password = getpass.getpass("Enter the wallet password: ")
 
         # send the hello message
-        self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!' )
-
-        # obtain the balance
-        response = self.get_balance( )
-        print( response )
-        response = self.distribute_rewards() 
-        print( response )
+        self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!\nCurrent Balance: { self.get_balance( ) }' )
         
     def read_config( self, config_file ):
         '''
@@ -51,7 +45,6 @@ class IdepAutodelegation():
         self.wallet_name = self.config['IDEP']['wallet_name']
         self.wallet_key = self.config['IDEP']['wallet_key']
         self.validator_key = self.config['IDEP']['validator_key']
-
 
     def send( self, msg ):
         '''
@@ -79,23 +72,38 @@ class IdepAutodelegation():
 
     def distribute_rewards( self ):
         '''
-        Distribute the rewards from the validator
+        Distribute the rewards from the validator and return the hash
         '''
-        #proc = Popen([ f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name} -y" ], stdout=PIPE, shell=True)
-        #(out, err) = proc.communicate( input=self.password )
         child = pexpect.spawn(f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name} -y", timeout=10)
         child.expect( b'Enter keyring passphrase:' ) 
         child.sendline( self.password )   
-        child.expect(pexpect.EOF)                                                                                                                                     
+        child.expect( pexpect.EOF )                                                                                                                                     
         child.close()
         line = self.parse_subprocess( child.before, 'txhash:' )
-        txhash = line.split('txhash:')[1]     
+        txhash = line.split('txhash: ')[1]
         return txhash
 
-    def delegate( self, amount, delegate ):
+    def delegate( self, amount ):
         '''
         Distribute the rewards from the validator
         '''
-        return os.system( f'iond tx staking delegate { delegate } { amount }idep --from { self.wallet_name } --chain-id { self.chain_id }' )
-    
+        child = pexpect.spawn( f'iond tx staking delegate { self.validator_key } { amount }idep --from { self.wallet_name } --chain-id { self.chain_id } -y', timeout=10)
+        child.expect( b'Enter keyring passphrase:' ) 
+        child.sendline( self.password )   
+        child.expect( pexpect.EOF )                                                                                                                                     
+        child.close()
+
+    def delegation_cycle( self ):
+        '''
+        Delegation cycle for distributing rewards and sending them out
+        '''
+        print( "Start Delegation Cycle!")
+        print( f"Current Balance: { self.get_balance() } " )
+        print( f"Distribution Tx Hash: { self.distribute_rewards() }" )
+        time.sleep( 15 )
+        balance = self.get_balance()
+        print( f"Current Balance (post distribution): { balance } " )
+        self.delegate( balance, self.validator_key )
+
+
 idep_bot = IdepAutodelegation()
