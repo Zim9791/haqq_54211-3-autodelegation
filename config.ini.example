@@ -1,6 +1,6 @@
 [IDEP]
 chain_id = SanfordNetwork
-wallet_name = sanford
+wallet_name = <wallet name>
 wallet_key = <wallet public key>
 validator_key = <validator public key>
 
