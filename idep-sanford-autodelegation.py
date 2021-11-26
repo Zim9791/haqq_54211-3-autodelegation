@@ -21,9 +21,6 @@ class IdepAutodelegation():
 
         # send the hello message
         self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!\nCurrent Balance: { self.get_balance( ) }' )
-
-        
-        self.delegation_cycle()
         
     def read_config( self, config_file ):
         '''
@@ -107,7 +104,10 @@ class IdepAutodelegation():
         time.sleep( 15 )
         balance = self.get_balance()
         print( f"Current Balance (post distribution): { balance } " )
-        self.delegate( balance, self.validator_key )
+        self.delegate( balance )
 
 
 idep_bot = IdepAutodelegation()
+
+        
+idep_bot.delegation_cycle()
