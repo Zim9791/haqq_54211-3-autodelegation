@@ -16,8 +16,11 @@ class IdepAutodelegation():
         self.setup_telegram()
         self.setup_idep_info()
 
-        # Prompt for the password
-        self.password = getpass.getpass("Enter the wallet password: ")
+        # Prompt for the password if not in environment
+        if "IDEP_PASSWORD" in os.environ:
+            self.password = os.environ['IDEP_PASSWORD']
+        else:
+            self.password = getpass.getpass("Enter the wallet password: ")
 
         # send the hello message
         self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!\nCurrent Delegations: { self.get_delegations() }' )
@@ -41,10 +44,27 @@ class IdepAutodelegation():
         '''
         Setup idep info
         '''
-        self.chain_id = self.config['IDEP']['chain_id']
-        self.wallet_name = self.config['IDEP']['wallet_name']
-        self.wallet_key = self.config['IDEP']['wallet_key']
-        self.validator_key = self.config['IDEP']['validator_key']
+        # chain id
+        if "CHAIN_ID" in os.environ:
+            self.chain_id = os.environ['CHAIN_ID']
+        else:
+            self.chain_id = self.config['IDEP']['chain_id']
+
+        # wallet name
+        if "WALLETNAME" in os.environ:
+            self.wallet_name = os.environ['WALLETNAME']
+        else:
+            self.wallet_name = self.config['IDEP']['wallet_name']
+        
+        # wallet and validator keys
+        if "WALLETKEY" in os.environ:
+            self.wallet_key = os.environ['WALLETKEY']
+        else:
+            self.wallet_key = self.config['IDEP']['wallet_key']
+        if "VALIDATORKEY" in os.environ:
+            self.validator_key = os.environ['VALIDATORKEY']
+        else:
+            self.validator_key = self.config['IDEP']['validator_key']
 
     def send( self, msg ):
         '''
