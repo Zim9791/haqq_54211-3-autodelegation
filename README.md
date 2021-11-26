@@ -31,5 +31,5 @@ Install from the requirements file:
 Copy and populate the config.ini file with the necessary information.
 ```cp config.ini.example config.ini```
 
-Run the script and enter the password
+Run the script
 ```python3 ./idep-sanford-autodelegation.py```
