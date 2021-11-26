@@ -25,7 +25,8 @@ class IdepAutodelegation():
         # obtain the balance
         response = self.get_balance( )
         print( response )
-        self.distribute_rewards() 
+        response = self.distribute_rewards() 
+        print( response )
         
     def read_config( self, config_file ):
         '''
