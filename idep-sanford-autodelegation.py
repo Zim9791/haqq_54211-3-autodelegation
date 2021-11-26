@@ -2,6 +2,8 @@
 import os, requests
 import configparser
 import pexpect
+import getpass
+
 from subprocess import Popen, PIPE
 
 class IdepAutodelegation():
@@ -15,7 +17,7 @@ class IdepAutodelegation():
         self.setup_idep_info()
 
         # Prompt for the password
-        self.password = input("Enter the wallet password: ")
+        self.password = getpass.getpass("Enter the wallet password: ")
 
         # send the hello message
         self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!' )
@@ -80,7 +82,7 @@ class IdepAutodelegation():
         '''
         #proc = Popen([ f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name}" ], stdout=PIPE, shell=True)
         child = pexpect.spawn( f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name}" ) 
-        print( child )
+        child.logfile_read = sys.stdout
         child.expect( 'Enter keyring passphrase:' ) 
         print( child )
         child.sendline( self.password ) 
