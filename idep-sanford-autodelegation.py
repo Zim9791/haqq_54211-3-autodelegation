@@ -92,22 +92,33 @@ class IdepAutodelegation():
         child.sendline( self.password )   
         child.expect( pexpect.EOF )                                                                                                                                     
         child.close()
-        print( child.before )
+        line = self.parse_subprocess( child.before, 'txhash:' )
+        txhash = line.split('txhash: ')[1]
+        return txhash
+    
+    def get_delegations( self ):
+        '''
+        Obtain the delegation amount for the validator
+        '''
+        proc = Popen([ f"iond q staking delegations-to  {self.validator_key} --chain-id= {self.chain_id}" ], stdout=PIPE, shell=True)
+        (out, err) = proc.communicate()
+        line = self.parse_subprocess( out, 'shares' )
+        balance = line.split('"')[1]
+        return balance
 
     def delegation_cycle( self ):
         '''
         Delegation cycle for distributing rewards and sending them out
         '''
         print( "Start Delegation Cycle!")
-        print( f"Current Balance: { self.get_balance() } " )
+        print( f"Current Delegation: { self.get_delegations() } " )
         print( f"Distribution Tx Hash: { self.distribute_rewards() }" )
         time.sleep( 15 )
         balance = self.get_balance()
         print( f"Current Balance (post distribution): { balance } " )
-        self.delegate( balance )
-
+        print( f"Delegation Tx Hash: { self.self.delegate( balance ) }" )
+        print( f"New Delegation Shares: { self.get_delegations() } " )
 
 idep_bot = IdepAutodelegation()
-
         
 idep_bot.delegation_cycle()
