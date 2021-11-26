@@ -14,6 +14,9 @@ class IdepAutodelegation():
         self.setup_telegram()
         self.setup_idep_info()
 
+        # Prompt for the password
+        self.password = input("Enter the wallet password: ")
+
         # send the hello message
         self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!' )
 
@@ -45,7 +48,6 @@ class IdepAutodelegation():
         self.wallet_name = self.config['IDEP']['wallet_name']
         self.wallet_key = self.config['IDEP']['wallet_key']
         self.validator_key = self.config['IDEP']['validator_key']
-        self.password = self.config['IDEP']['password']
 
 
     def send( self, msg ):
@@ -77,10 +79,12 @@ class IdepAutodelegation():
         Distribute the rewards from the validator
         '''
         #proc = Popen([ f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name}" ], stdout=PIPE, shell=True)
-        child = pexpect.spawn( f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name} -y" ) 
+        child = pexpect.spawn( f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name}" ) 
+        print( child )
         child.expect( 'Enter keyring passphrase:' ) 
+        print( child )
         child.sendline( self.password ) 
-        print( out )
+
 
     def delegate( self, amount, delegate ):
         '''
