@@ -83,6 +83,19 @@ class IdepAutodelegation():
         txhash = line.split('txhash: ')[1]
         return txhash
 
+    def distribute_rewards_commission( self ):
+        '''
+        Distribute the comission for the validator and return the hash
+        '''
+        child = pexpect.spawn(f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name} --commission -y", timeout=10)
+        child.expect( b'Enter keyring passphrase:' ) 
+        child.sendline( self.password )   
+        child.expect( pexpect.EOF )                                                                                                                                     
+        child.close()
+        line = self.parse_subprocess( child.before, 'txhash:' )
+        txhash = line.split('txhash: ')[1]
+        return txhash
+
     def delegate( self, amount ):
         '''
         Distribute the rewards from the validator
@@ -103,23 +116,28 @@ class IdepAutodelegation():
         proc = Popen([ f"iond q staking delegations-to  {self.validator_key} --chain-id={self.chain_id}" ], stdout=PIPE, shell=True)
         (out, err) = proc.communicate()
         line = self.parse_subprocess( out, 'shares' )
-        balance = line.split('"')[1]
+        balance = line.split('"')[1].split(".")[0]
         return balance
 
     def delegation_cycle( self ):
         '''
         Delegation cycle for distributing rewards and sending them out
         '''
-        output = [ "Start Delegation Cycle!" ]
-        output.append( f"Current Delegation: { self.get_delegations() } " )
-        output.append( f"Distribution Tx Hash: { self.distribute_rewards() }" )
+        self.send( f"{self.name}: Start Delegation Cycle!" )
+        self.send( f"{self.name}: Current Delegation: { self.get_delegations() } " )
+
+        self.send( f"{self.name}: Distribution Tx Hash: { self.distribute_rewards() }" )
         time.sleep( 10 )
+
+        self.send( f"{self.name}: Commission Tx Hash: { self.distribute_rewards_commission() }" )
+        time.sleep( 10 )
+        
         balance = self.get_balance()
-        output.append( f"Current Balance (post distribution): { balance } " )
-        output.append( f"Delegation Tx Hash: { self.delegate( balance ) }" )
+        self.send( f"{self.name}: Current Balance (post distribution): { balance } " )
+        self.send( f"{self.name}: Delegation Tx Hash: { self.delegate( balance ) }" )
         time.sleep( 10 )
-        output.append( f"New Delegation Shares: { self.get_delegations() } " )
-        self.send( f'{self.name}: ' + '\n'.join( output ) )
+
+        self.send( f"{self.name}: New Delegation Shares: { self.get_delegations() } " )
 
 idep_bot = IdepAutodelegation()
 
