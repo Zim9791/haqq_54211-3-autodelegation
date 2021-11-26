@@ -81,7 +81,7 @@ class IdepAutodelegation():
         Distribute the rewards from the validator
         '''
         proc = Popen([ f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name} -y" ], stdout=PIPE, shell=True)
-        (out, err) = proc.communicate()
+        (out, err) = proc.communicate( input=self.password )
         line = self.parse_subprocess( out, 'txhash' )
         txhash = line.split('txhash: ')[1]
         return txhash
