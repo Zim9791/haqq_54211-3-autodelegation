@@ -5,13 +5,25 @@ The script will automatically perform the calls for withdrawing the rewards and 
 necessary transactions to delegate to the validator. The bot uses telegram for notifications
 and will provide information on the transaction hashes.
 
-When executing the script, a password will be prompted and the input will be used for
-the transactions for delegation and withdrawing the rewards.
+
+When executing the script, if the password is not in the `IDEP_PASSWORD` environmental variable, the prompt will request a password for the wallet. The password is necessary for the delegation and reward transactions.
+
+The config.ini can be used for loading in the variables or the user's environmental variables may be utilized.
+
+Environmental Variables:
+`CHAIN_ID`: Chain ID
+`WALLET_NAME`: Wallet Name
+`WALLET_KEY`: Wallet Public Key
+`VALIDATOR_KEY`: Validator Public Key
+`IDEP_PASSWORD`: Wallet Password
+`TELEGRAM_TOKEN`: Telegram Token
+`TELEGRAM_CHAT_ID`: Telegram Chat ID
+
+Refer to the config.ini.example for a template to populate.
 
 Assumptions:
 - iond is in the path of the user
 - nominal transaction path only
-- `wallet_name` and `wallet_key` and `validator_key` are all linked (e.g. the public key for `wallet_key` has the alias `wallet_name` and owns `validator_key`)
 
 Install from the requirements file:
 ```pip3 install -r requirements.txt```
