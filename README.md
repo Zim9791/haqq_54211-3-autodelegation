@@ -17,6 +17,7 @@ Environmental Variables:
 - `IDEP_PASSWORD`: Wallet Password
 - `TELEGRAM_TOKEN`: Telegram Token
 - `TELEGRAM_CHAT_ID`: Telegram Chat ID
+- `SLEEP_TIME`: Sleep Time for Delegation Cycles
 
 Refer to the config.ini.example for a template to populate.
 

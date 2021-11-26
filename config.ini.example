@@ -4,6 +4,7 @@ wallet_name = <wallet name>
 wallet_key = <wallet public key>
 validator_key = <validator public key>
 password = <wallet password>
+sleep_time = <sleep time between delegation cycles>
 
 [Telegram]
 telegram_token = <telegram bot token>

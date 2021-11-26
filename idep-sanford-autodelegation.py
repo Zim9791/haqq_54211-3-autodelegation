@@ -25,8 +25,11 @@ class IdepAutodelegation():
         '''
         config = configparser.ConfigParser()
         if os.path.exists( config_file ):
+            print( f"Using Configuration File: { config_file }")
             config.read( config_file )
-        
+        else:
+            print( f"Configuration File Does Not Exist: { config_file }")
+
         # save the config
         self.config = config
 
@@ -52,6 +55,15 @@ class IdepAutodelegation():
         '''
         Setup idep info
         '''
+
+        # sleep time between delegation cycles
+        if "SLEEP_TIME" in os.environ:
+            self.sleep_time = int(os.environ['SLEEP_TIME'])
+        elif 'sleep_time' in self.config['IDEP']:
+            self.sleep_time = int(self.config['IDEP']['sleep_time'])
+        else:
+            self.sleep_time = 3600
+
         # Prompt for the password if not in environment
         if "IDEP_PASSWORD" in os.environ:
             self.password = os.environ['IDEP_PASSWORD']
@@ -175,7 +187,7 @@ class IdepAutodelegation():
         time.sleep( 10 )
         
         balance = self.get_balance()
-        self.send( f" - Current Balance (post distribution): { balance } " )
+        self.send( f" - Current Balance (post distribution): { float( balance ) * (1/100000000) } " )
         self.send( f" - Delegation Tx Hash: { self.delegate( balance ) }" )
         time.sleep( 10 )
 
@@ -183,12 +195,24 @@ class IdepAutodelegation():
         self.send( f" - New Delegation: { new_delegations } ( Delta: { new_delegations - curr_delegations } )" )
         self.send( f"End Delegation Cycle" )
 
+        self.send( f"Sleeping { self.sleep_time } Seconds\n" )
+        time.sleep( self.sleep_time )
+
+def parse_arguments( ):
+    '''
+    Parse the arguments passed in
+    '''
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', '-c', type=str, required=False, default='config.ini', help='Configuration File')
+    return parser.parse_args()
+
+# Parse arguments
+args = parse_arguments()
+
 # Create the object
-idep_bot = IdepAutodelegation()
+idep_bot = IdepAutodelegation( args.config )
 
 # run periodic delegation cycle as directed by sleep time
-sleep_time = 3600
 while True:
     idep_bot.delegation_cycle()
-    idep_bot.send( f"Sleeping { sleep_time } Seconds\n" )
-    time.sleep( sleep_time )
