@@ -80,10 +80,11 @@ class IdepAutodelegation():
         '''
         Distribute the rewards from the validator
         '''
-        #proc = Popen([ f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name}" ], stdout=PIPE, shell=True)
-        #child = pexpect.spawn( f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name}" ) 
-        run ( f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name} -y", events={ '(?i)password' : self.password } ) 
-
+        proc = Popen([ f"iond tx distribution withdraw-rewards { self.validator_key } --chain-id={ self.chain_id } --from {self.wallet_name} -y" ], stdout=PIPE, shell=True)
+        (out, err) = proc.communicate()
+        line = self.parse_subprocess( out, 'txhash' )
+        txhash = line.split('txhash: ')[1]
+        return txhash
 
     def delegate( self, amount, delegate ):
         '''
