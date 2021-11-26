@@ -30,15 +30,25 @@ class IdepAutodelegation():
         Read the configuration file
         '''
         config = configparser.ConfigParser()
-        config.read( config_file )
+        if os.path.exists( config_file ):
+            config.read( config_file )
+        
+        # save the config
         self.config = config
 
     def setup_telegram( self ):
         '''
         Setup telegram
         '''
-        self.telegram_token = self.config['Telegram']['telegram_token']
-        self.telegram_chat_id = self.config['Telegram']['telegram_chat_id']
+        if "TELEGRAM_TOKEN" in os.environ:
+            self.telegram_token = os.environ['TELEGRAM_TOKEN']
+        else:
+            self.telegram_token = self.config['Telegram']['telegram_token']
+        
+        if "TELEGRAM_CHAT_ID" in os.environ:
+            self.telegram_chat_id = os.environ['TELEGRAM_CHAT_ID']
+        else:
+            self.telegram_chat_id = self.config['Telegram']['telegram_chat_id']
 
     def setup_idep_info( self ):
         '''
@@ -51,17 +61,17 @@ class IdepAutodelegation():
             self.chain_id = self.config['IDEP']['chain_id']
 
         # wallet name
-        if "WALLETNAME" in os.environ:
-            self.wallet_name = os.environ['WALLETNAME']
+        if "WALLET_NAME" in os.environ:
+            self.wallet_name = os.environ['WALLET_NAME']
         else:
             self.wallet_name = self.config['IDEP']['wallet_name']
         
         # wallet and validator keys
-        if "WALLETKEY" in os.environ:
+        if "WALLET_KEY" in os.environ:
             self.wallet_key = os.environ['WALLETKEY']
         else:
             self.wallet_key = self.config['IDEP']['wallet_key']
-        if "VALIDATORKEY" in os.environ:
+        if "VALIDATOR_KEY" in os.environ:
             self.validator_key = os.environ['VALIDATORKEY']
         else:
             self.validator_key = self.config['IDEP']['validator_key']
