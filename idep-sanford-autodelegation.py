@@ -88,8 +88,9 @@ class IdepAutodelegation():
         child.sendline( self.password )   
         child.expect(pexpect.EOF)                                                                                                                                     
         child.close()
-        print( child.before )      
-        return child
+        line = self.parse_subprocess( child.before, 'txhash:' )
+        txhash = line.split('txhash:')[1]     
+        return txhash
 
     def delegate( self, amount, delegate ):
         '''
