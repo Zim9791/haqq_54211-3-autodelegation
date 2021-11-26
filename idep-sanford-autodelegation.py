@@ -166,21 +166,21 @@ class IdepAutodelegation():
         '''
         self.send( f"Start Delegation Cycle!" )
         curr_delegations = self.get_delegations()
-        self.send( f"Current Delegation: { curr_delegations } " )
+        self.send( f" - Current Delegation: { curr_delegations } " )
 
-        self.send( f"Distribution Tx Hash: { self.distribute_rewards() }" )
+        self.send( f" - Distribution Tx Hash: { self.distribute_rewards() }" )
         time.sleep( 10 )
 
-        self.send( f"Commission Tx Hash: { self.distribute_rewards_commission() }" )
+        self.send( f" - Commission Tx Hash: { self.distribute_rewards_commission() }" )
         time.sleep( 10 )
         
         balance = self.get_balance()
-        self.send( f"Current Balance (post distribution): { balance } " )
-        self.send( f"Delegation Tx Hash: { self.delegate( balance ) }" )
+        self.send( f" - Current Balance (post distribution): { balance } " )
+        self.send( f" - Delegation Tx Hash: { self.delegate( balance ) }" )
         time.sleep( 10 )
 
         new_delegations = self.get_delegations()
-        self.send( f"New Delegation: { new_delegations } ( Delta: { new_delegations - curr_delegations } )" )
+        self.send( f" - New Delegation: { new_delegations } ( Delta: { new_delegations - curr_delegations } )" )
         self.send( f"End Delegation Cycle" )
 
 # Create the object
