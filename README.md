@@ -11,13 +11,13 @@ When executing the script, if the password is not in the `IDEP_PASSWORD` environ
 The config.ini can be used for loading in the variables or the user's environmental variables may be utilized.
 
 Environmental Variables:
-`CHAIN_ID`: Chain ID
-`WALLET_NAME`: Wallet Name
-`WALLET_KEY`: Wallet Public Key
-`VALIDATOR_KEY`: Validator Public Key
-`IDEP_PASSWORD`: Wallet Password
-`TELEGRAM_TOKEN`: Telegram Token
-`TELEGRAM_CHAT_ID`: Telegram Chat ID
+- `CHAIN_ID`: Chain ID
+- `WALLET_NAME`: Wallet Name
+- `WALLET_KEY`: Wallet Public Key
+- `VALIDATOR_KEY`: Validator Public Key
+- `IDEP_PASSWORD`: Wallet Password
+- `TELEGRAM_TOKEN`: Telegram Token
+- `TELEGRAM_CHAT_ID`: Telegram Chat ID
 
 Refer to the config.ini.example for a template to populate.
 
