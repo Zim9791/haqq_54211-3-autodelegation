@@ -34,3 +34,15 @@ Copy and populate the config.ini file with the necessary information.
 
 Run the script
 ```python3 ./idep-sanford-autodelegation.py```
+
+Example of Output:
+```Hello from IDEP Autodelegation Bot on nuremberg!
+Start Delegation Cycle!
+ - Current Delegation: 1760.27555798 
+ - Distribution Tx Hash: 1C95365336438D4442BB4E89AD494DD218E0EC4B03A1DDE6DD5530B40A2C8828
+ - Commission Tx Hash: 833667E687ABCF4D0EB7BB5C563CEB787D58E28481AA15452BCD7B0A15287349
+ - Current Balance (post distribution): 0.05539889 
+ - Delegation Tx Hash: 725D3FABC4F124DBC144A5ADF1DB02D7DDA9282DE9F1CBBEE95D9BBB3DC49081
+ - New Delegation: 1760.3309568700001 ( Delta: 0.055398890000105894 )
+End Delegation Cycle
+Sleeping 3605 Seconds```

@@ -81,7 +81,7 @@ class IdepAutodelegation():
         # wallet name
         if "WALLET_NAME" in os.environ:
             self.wallet_name = os.environ['WALLET_NAME']
-        if "WALLETNAME" in os.environ:
+        elif "WALLETNAME" in os.environ:
             self.wallet_name = os.environ['WALLETNAME']
         else:
             self.wallet_name = self.config['IDEP']['wallet_name']
@@ -213,6 +213,6 @@ args = parse_arguments()
 # Create the object
 idep_bot = IdepAutodelegation( args.config )
 
-# run periodic delegation cycle as directed by sleep time
+# run periodic delegation cycle
 while True:
     idep_bot.delegation_cycle()
