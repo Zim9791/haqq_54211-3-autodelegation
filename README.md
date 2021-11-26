@@ -11,8 +11,7 @@ the transactions for delegation and withdrawing the rewards.
 Assumptions:
 - iond is in the path of the user
 - nominal transaction path only
-- `wallet_name` and `wallet_key` and `validator_key` are all linked
-  e.g. the public key for `wallet_key` has the alias `wallet_name` and owns `validator_key`
+- `wallet_name` and `wallet_key` and `validator_key` are all linked (e.g. the public key for `wallet_key` has the alias `wallet_name` and owns `validator_key`)
 
 Install from the requirements file:
 ```pip3 install -r requirements.txt```
