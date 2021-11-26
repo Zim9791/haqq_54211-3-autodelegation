@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os, requests
 import configparser
+from subprocess import Popen, PIPE
 
 class IdepAutodelegation():
     def __init__( self, config_file='config.ini' ):
@@ -10,6 +11,7 @@ class IdepAutodelegation():
         # read the config and setup the telegram
         self.read_config( config_file )
         self.setup_telegram()
+        self.setup_idep_info()
 
         # send the hello message
         self.send( f'{self.name}: Hello from IDEP Autodelegation Bot!' )
@@ -30,14 +32,17 @@ class IdepAutodelegation():
         '''
         Setup telegram
         '''
-        self.telegram_token = self.config['Telegram']['telegramToken']
-        self.telegram_chat_id = self.config['Telegram']['telegramChatID']
+        self.telegram_token = self.config['Telegram']['telegram_token']
+        self.telegram_chat_id = self.config['Telegram']['telegram_chat_id']
 
     def setup_idep_info( self ):
         '''
         Setup idep info
         '''
-        self.public_key = self.config['IDEP']['public_key']
+        self.chain_id = self.config['IDEP']['chain_id']
+        self.wallet_name = self.config['IDEP']['wallet_name']
+        self.wallet_key = self.config['IDEP']['wallet_key']
+        self.validator_key = self.config['IDEP']['validator_key']
 
     def send( self, msg ):
         '''
@@ -49,7 +54,7 @@ class IdepAutodelegation():
         '''
         Obtain the IDEP balance
         '''
-        return os.system( f'iond q bank balances { self.public_key }' )
+        return os.system( f'iond q bank balances { self.wallet_key }' )
 
     def distribute_rewards( self ):
         '''
