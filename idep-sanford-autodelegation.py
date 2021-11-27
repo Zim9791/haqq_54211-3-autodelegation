@@ -62,7 +62,7 @@ class IdepAutodelegation():
         elif 'sleep_time' in self.config['IDEP']:
             self.sleep_time = int(self.config['IDEP']['sleep_time'])
         else:
-            self.sleep_time = 3600
+            self.sleep_time = 600
 
         # Prompt for the password if not in environment
         if "IDEP_PASSWORD" in os.environ:
