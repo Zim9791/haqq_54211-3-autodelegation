@@ -33,4 +33,6 @@ Copy and populate the config.ini file with the necessary information: <br>
 ```cp config.ini.example config.ini```
 
 Run the script:<br>
-```python3 ./idep-sanford-autodelegation.py```
+```python3 ./idep-sanford-autodelegation.py``` <br>
+    or specify the configuration file <br>
+```python3 ./idep-sanford-autodelegation.py -c <configuration file>```
