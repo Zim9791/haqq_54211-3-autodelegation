@@ -26,11 +26,11 @@ Assumptions:
 - nominal transaction path only
 - no fees taken into account for the delegation transactions
 
-Install python3 and install from the requirements file:
+Install python3 and install from the requirements file: <br>
 ```pip3 install -r requirements.txt```
 
-Copy and populate the config.ini file with the necessary information.
+Copy and populate the config.ini file with the necessary information: <br>
 ```cp config.ini.example config.ini```
 
-Run the script
+Run the script:<br>
 ```python3 ./idep-sanford-autodelegation.py```
