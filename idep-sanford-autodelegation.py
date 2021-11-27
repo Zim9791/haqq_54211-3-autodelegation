@@ -88,14 +88,28 @@ class IdepAutodelegation():
         
         # wallet and validator keys
         if "WALLET_KEY" in os.environ:
-            self.wallet_key = os.environ['WALLETKEY']
-        else:
+            self.wallet_key = os.environ['WALLET_KEY']
+        elif 'wallet_key' in self.config['IDEP']:
             self.wallet_key = self.config['IDEP']['wallet_key']
+        elif "WALLET_ADDRESS" in os.environ:
+            self.wallet_key = os.environ['WALLET_ADDRESS']
+        elif 'wallet_address' in self.config['IDEP']:
+            self.wallet_key = self.config['IDEP']['wallet_address']
+        else:
+            print('Unable to find the wallet address in the configuration file. Exiting...')
+            exit()
 
         if "VALIDATOR_KEY" in os.environ:
-            self.validator_key = os.environ['VALIDATORKEY']
-        else:
+            self.validator_key = os.environ['VALIDATOR_KEY']
+        elif 'validator_key' in self.config['IDEP']:
             self.validator_key = self.config['IDEP']['validator_key']
+        elif "VALIDATOR_ADDRESS" in os.environ:
+            self.validator_key = os.environ['VALIDATOR_ADDRESS']
+        elif 'validator_address' in self.config['IDEP']:
+            self.validator_key = self.config['IDEP']['validator_address']
+        else:
+            print('Unable to find the validator address in the configuration file. Exiting...')
+            exit()
 
     def send( self, msg ):
         '''

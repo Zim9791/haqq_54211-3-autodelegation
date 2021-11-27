@@ -1,8 +1,8 @@
 [IDEP]
 chain_id = SanfordNetwork
 wallet_name = <wallet name>
-wallet_key = <wallet public key>
-validator_key = <validator public key>
+wallet_address = <wallet address>
+validator_address = <validator address>
 password = <wallet password>
 sleep_time = <sleep time between delegation cycles in seconds - default 600 seconds>
 

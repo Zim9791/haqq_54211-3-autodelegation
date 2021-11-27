@@ -12,8 +12,8 @@ The config.ini can be used for loading in the variables or the user's environmen
 Environmental Variables:
 - `CHAIN_ID`: Chain ID
 - `WALLET_NAME`: Wallet Name
-- `WALLET_KEY`: Wallet Public Key
-- `VALIDATOR_KEY`: Validator Public Key
+- `WALLET_ADDRESS`: Wallet Address
+- `VALIDATOR_ADDRESS`: Validator Address
 - `IDEP_PASSWORD`: Wallet Password
 - `TELEGRAM_TOKEN`: Telegram Token
 - `TELEGRAM_CHAT_ID`: Telegram Chat ID
