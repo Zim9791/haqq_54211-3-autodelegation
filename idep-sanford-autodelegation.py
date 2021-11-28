@@ -6,6 +6,10 @@ import getpass
 import time 
 from subprocess import Popen, PIPE
 
+# constants
+IDEP_DECIMALS = 100000000
+TRANSACTION_WAIT_TIME = 10
+
 class IdepAutodelegation():
     def __init__( self, config_file='config.ini' ):
         # obtain the host name
@@ -63,6 +67,14 @@ class IdepAutodelegation():
             self.sleep_time = int(self.config['IDEP']['sleep_time'])
         else:
             self.sleep_time = 600
+        
+        # bank reserve
+        if "IDEP_RESERVE" in os.environ:
+            self.reserve = float(os.environ['IDEP_RESERVE'])
+        elif 'reserve' in self.config['IDEP']:
+            self.reserve = float(self.config['IDEP']['reserve'])
+        else:
+            self.reserve = 0.1000
 
         # Prompt for the password if not in environment
         if "IDEP_PASSWORD" in os.environ:
@@ -126,6 +138,18 @@ class IdepAutodelegation():
         for line in response.decode("utf-8").split('\n'):
             if keyword in line:
                 return line
+    
+    def shares_to_decimal( self, shares ):
+        '''
+        return the share to decimal conversion
+        '''
+        return float( shares ) * ( 1/IDEP_DECIMALS )
+
+    def decimal_to_shares( self, amount ):
+        '''
+        return the decimal to shares conversion
+        '''
+        return int( amount * IDEP_DECIMALS )
 
     def get_balance( self ):
         '''
@@ -135,7 +159,7 @@ class IdepAutodelegation():
         (out, err) = proc.communicate()
         line = self.parse_subprocess( out, 'amount' )
         balance = line.split('"')[1]
-        return balance
+        return int( balance )
 
     def distribute_rewards( self ):
         '''
@@ -183,7 +207,7 @@ class IdepAutodelegation():
         proc = Popen([ f"iond q staking delegations-to {self.validator_key} --chain-id={self.chain_id}" ], stdout=PIPE, shell=True)
         (out, err) = proc.communicate()
         line = self.parse_subprocess( out, 'shares' )
-        balance = float(line.split('"')[1].split(".")[0]) * (1/100000000)
+        balance = self.shares_to_decimal( line.split('"')[1].split(".")[0]) 
         return balance
 
     def delegation_cycle( self ):
@@ -195,18 +219,27 @@ class IdepAutodelegation():
         self.send( f" - Current Delegation: { curr_delegations } " )
 
         self.send( f" - Distribution Tx Hash: { self.distribute_rewards() }" )
-        time.sleep( 10 )
+        time.sleep( TRANSACTION_WAIT_TIME )
 
         self.send( f" - Commission Tx Hash: { self.distribute_rewards_commission() }" )
-        time.sleep( 10 )
+        time.sleep( TRANSACTION_WAIT_TIME )
         
         balance = self.get_balance()
-        self.send( f" - Current Balance (post distribution): { float( balance ) * (1/100000000) } " )
-        self.send( f" - Delegation Tx Hash: { self.delegate( balance ) }" )
-        time.sleep( 10 )
+        self.send( f" - Current Balance ( post distribution ): { self.shares_to_decimal( balance ) } " )
 
-        new_delegations = self.get_delegations()
-        self.send( f" - New Delegation: { new_delegations } ( Delta: { new_delegations - curr_delegations } )" )
+        # determine if the balance exceeds the reserve for a re-delegation
+        proposed_delegation = balance - self.decimal_to_shares( self.reserve )
+
+        # if the proposed delegation meets criteria
+        if proposed_delegation > 0:
+            self.send( f" - Proposed Amount for Delegation: { self.shares_to_decimal( proposed_delegation ) } ( { proposed_delegation } shares )" )
+            self.send( f" - Delegation Tx Hash: { self.delegate( proposed_delegation ) }" )
+            time.sleep( TRANSACTION_WAIT_TIME )
+
+            new_delegations = self.get_delegations()
+            self.send( f" - New Delegation: { new_delegations } ( Delta: { new_delegations - curr_delegations } )" )
+        else:
+            self.send( f" - Balance of { self.shares_to_decimal( balance ) } does not exceed the reserve amount { self.reserve } for delegation - Skipping..." )
         self.send( f"End Delegation Cycle" )
 
         self.send( f"Sleeping { self.sleep_time } Seconds\n" )

@@ -3,6 +3,7 @@ chain_id = SanfordNetwork
 wallet_name = <wallet name>
 wallet_address = <wallet address>
 validator_address = <validator address>
+reserve = <balance in decimal to hold in reserve - default 0.1 >
 password = <wallet password>
 sleep_time = <sleep time between delegation cycles in seconds - default 600 seconds>
 
