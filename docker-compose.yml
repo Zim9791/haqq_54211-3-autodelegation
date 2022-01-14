@@ -1,0 +1,15 @@
+version: "3.4"
+
+services:
+  iond-sanford:
+    container_name: iond-sanford
+    image: makalfe/idep-delegation-sanford
+    restart: always
+    ports:
+      - "26657:26657"
+    volumes:
+      - $PWD/../.ion/:/root/.ion/
+      - type: bind
+        source: $PWD/config.ini
+        target: /root/config.ini
+        read_only: true
