@@ -3,7 +3,7 @@ version: "3.4"
 services:
   iond-sanford:
     container_name: iond-sanford
-    image: makalfe/idep-delegation-sanford
+    image: makalfe/idep-delegation-sanford:latest
     restart: always
     ports:
       - "26657:26657"
