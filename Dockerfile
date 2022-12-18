@@ -14,10 +14,10 @@ RUN wget https://go.dev/dl/go1.17.6.linux-amd64.tar.gz
 RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.17.6.linux-amd64.tar.gz
 ENV PATH="/usr/local/go/bin:${PATH}"
 
-# copy the iond files
-RUN git clone https://github.com/IDEP-network/SanfordV2.git
-RUN cp SanfordV2/iond /usr/local/bin/
-RUN chmod a+x /usr/local/bin/iond
+# copy the haqqd files
+RUN git clone https://github.com/haqq-network/haqq.git
+RUN cp root/haqq /usr/local/bin/
+RUN chmod a+x /usr/local/bin/haqq
 
 # install wasmvm
 RUN /usr/local/go/bin/go get -u github.com/CosmWasm/wasmvm@v1.0.0-beta4
@@ -25,9 +25,9 @@ RUN chmod +x /root/go/pkg/mod/github.com/\!cosm\!wasm/wasmvm@v1.0.0-beta4/api/li
 RUN cp -r $HOME/go/pkg/mod/github.com/\!cosm\!wasm/wasmvm@v1.0.0-beta4/api/libwasmvm.so /usr/lib/
 
 # copy install the requirements
-ADD ./idep-sanford-autodelegation.py /root/
+ADD ./haqq_54211-3-autodelegation.py /root/
 ADD ./requirements.txt /root/
 RUN pip3 install -r requirements.txt
 
 # run the script
-CMD /usr/local/bin/iond start
+CMD /usr/local/bin/haqq start
