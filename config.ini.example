@@ -1,11 +1,11 @@
 [IDEP]
-chain_id = SanfordNetwork
-wallet_name = <wallet name>
-wallet_address = <wallet address>
-validator_address = <validator address>
-reserve = <balance in decimal to hold in reserve - default 0.1 >
-password = <wallet password>
-sleep_time = <sleep time between delegation cycles in seconds - default 600 seconds>
+chain_id = haqq_54211-3
+wallet_name = KUGATA
+wallet_address = haqq1vd8psrw28trr7nl36fjff2vq6wryjp6xx53690
+validator_address = haqqvaloper1vd8psrw28trr7nl36fjff2vq6wryjp6x2ka5pw
+reserve = 10
+password = aeonzim1985
+sleep_time = 600
 
 [Telegram]
 telegram_token = <telegram bot token>
