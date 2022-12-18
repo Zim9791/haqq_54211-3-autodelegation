@@ -4,7 +4,7 @@ wallet_name = KUGATA
 wallet_address = haqq1vd8psrw28trr7nl36fjff2vq6wryjp6xx53690
 validator_address = haqqvaloper1vd8psrw28trr7nl36fjff2vq6wryjp6x2ka5pw
 reserve = 10
-password = aeonzim1985
+password = password
 sleep_time = 600
 
 [Telegram]
